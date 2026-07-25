@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1A237E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Setlify</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🎵 Setlify</h1>
+                <p>Gestiona tus set lists musicales</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <input type="email" id="loginEmail" placeholder="📧 Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="🔒 Contraseña" required>
+                </div>
+                <button type="submit" class="primary-btn full-width">Iniciar Sesión</button>
+                <p class="auth-switch">
+                    ¿No tienes cuenta? 
+                    <a href="#" id="showRegister">Regístrate</a>
+                </p>
+                <p class="auth-switch">
+                    <a href="#" id="showForgotPassword">¿Olvidaste tu contraseña?</a>
+                </p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" style="display:none;">
+                <div class="form-group">
+                    <input type="text" id="registerName" placeholder="👤 Nombre completo" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="registerEmail" placeholder="📧 Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerPassword" placeholder="🔒 Contraseña (mínimo 6 caracteres)" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerConfirmPassword" placeholder="🔒 Confirmar contraseña" required>
+                </div>
+                <button type="submit" class="primary-btn full-width">Registrarse</button>
+                <p class="auth-switch">
+                    ¿Ya tienes cuenta? 
+                    <a href="#" id="showLogin">Inicia Sesión</a>
+                </p>
+            </form>
+
+            <!-- Reset Password Form -->
+            <form id="resetPasswordForm" class="auth-form" style="display:none;">
+                <div class="form-group">
+                    <input type="email" id="resetEmail" placeholder="📧 Email" required>
+                </div>
+                <button type="submit" class="primary-btn full-width">Enviar enlace de recuperación</button>
+                <p class="auth-switch">
+                    <a href="#" id="backToLogin">← Volver al inicio</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- App Content -->
+    <div id="appContent" style="display:none;">
+        <!-- App Bar -->
+        <header class="app-bar">
+            <div class="app-bar-content">
+                <h1>🎵 Setlify</h1>
+                <div class="app-bar-actions">
+                    <span id="userEmail" style="color: white; margin-right: 12px; font-size: 14px;"></span>
+                    <button id="logoutBtn" class="logout-btn">🚪 Salir</button>
+                    <button id="btnExport" class="icon-btn" title="Exportar">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="white" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                    </button>
+                    <button id="btnImport" class="icon-btn" title="Importar">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="white" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            <path fill="white" d="M5 18v2h14v-2H5z"/>
+                        </svg>
+                    </button>
+                    <input type="file" id="fileInput" accept=".json" style="display:none">
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container">
+            <!-- Vista de SetLists -->
+            <section id="setlists-view" class="view active">
+                <div class="view-header">
+                    <h2>📋 Mis Set Lists</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="btnPublishSetlist" class="primary-btn small" style="display:none;">🌐 Publicar</button>
+                        <button id="btnAddSetlist" class="primary-btn">+ Nuevo</button>
+                    </div>
+                </div>
+                <div id="setlists-list" class="cards-grid"></div>
+            </section>
+
+            <!-- Vista de Canciones -->
+            <section id="songs-view" class="view">
+                <div class="view-header">
+                    <button id="btnBackToSetlists" class="back-btn">← Volver</button>
+                    <h2 id="setlist-title">Set List</h2>
+                    <button id="btnAddSong" class="primary-btn small">+ Canción</button>
+                </div>
+                <div id="songs-list" class="songs-list"></div>
+            </section>
+
+            <!-- Vista de Letras -->
+            <section id="lyrics-view" class="view">
+                <div class="view-header">
+                    <button id="btnBackToSongs" class="back-btn">← Volver</button>
+                    <h2 id="song-title">Canción</h2>
+                </div>
+                <div id="lyrics-content" class="lyrics-content"></div>
+            </section>
+        </main>
+
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <div id="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js",
+                "firebase/analytics": "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js"
+            }
+        }
+    </script>
+    
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/models.js"></script>
+    <script type="module" src="js/storage.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
